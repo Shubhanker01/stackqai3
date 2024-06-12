@@ -28,32 +28,28 @@ export default function Main() {
         let bodyContent = JSON.stringify({
             "ques": question
         });
+       
         let response = await fetch("http://127.0.0.1:5000/question", {
             method: "POST",
             body: bodyContent,
             headers: headersList
         });
         let data = await response.text();
+        let bodyContent1=JSON.stringify({
+            "email":email,
+            "question":question,
+            "answer":data
+        })
+        let data2 = await fetch('http://localhost:9000/quesans',{
+            method:'POST',
+            body:bodyContent1,
+            headers:headersList
+        })
+        let res = await data2.text()
+        console.log(res)
         setAns(data)
     }
 
-    const saveQues = async () => {
-        let headersList = {
-            "Accept": "*/*",
-            "Content-Type": "application/json"
-        }
-        let bodyContent = JSON.stringify({
-            "email": email,
-            "question": question
-        })
-        let response = await fetch("http://localhost:9000/ques", {
-            method: 'POST',
-            headers: headersList,
-            body: bodyContent
-        })
-        let data = await response.text()
-        console.log(data)
-    }
 
     const handleChange = (e) => {
         setQuestion(e.target.value)
@@ -64,7 +60,6 @@ export default function Main() {
         setArr([...arr, { id: id++, ques: question }])
         setState(true)
         getAPI()
-        saveQues()
         setQuestion("")
         // var ele = document.getElementById('chatbox')
         // ele.scrollTop = ele.scrollHeight

@@ -7,6 +7,7 @@ const cors = require('cors')
 const user = require('./Routes/adduser')
 const ques = require('./Routes/ques')
 const ans = require('./Routes/ans')
+const quesans = require('./Routes/quesans')
 
 app.use(express.json())
 app.use(cors())
@@ -18,6 +19,7 @@ app.get('/', function () {
 app.use('/user', user)
 app.use('/ques',ques)
 app.use('/ans',ans)
+app.use('/quesans',quesans)
 
 app.listen(port, function () {
   console.log(`Example app listening on port:${port}`)
