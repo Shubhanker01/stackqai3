@@ -5,7 +5,7 @@ import UserChat from "./UserChat"
 import Intro from "./Intro"
 import Chatbot from "./Chatbot"
 import UserProfile from "./UserProfile"
-import { useLocation } from "react-router-dom"
+import { Link, useLocation } from "react-router-dom"
 
 let id = 0
 
@@ -19,6 +19,7 @@ export default function Main() {
     const [state, setState] = useState(false)
     const [ans, setAns] = useState("")
     const [email, getEmail] = useState(data.email)
+    
 
     const getAPI = async () => {
         let headersList = {
@@ -38,7 +39,8 @@ export default function Main() {
         let bodyContent1=JSON.stringify({
             "email":email,
             "question":question,
-            "answer":data
+            "answer":data,
+            "date":Date
         })
         let data2 = await fetch('http://localhost:9000/quesans',{
             method:'POST',
@@ -86,7 +88,11 @@ export default function Main() {
                                 <div className=" w-[25px] h-[5px] bg-yellow-400"></div>
 
                             </div>
-                            <Addchat toggle={toggle}></Addchat>
+                            {/* <Addchat toggle={toggle} email={data.email}></Addchat> */}
+                            <div className="relative top-[115px] left-[10px] h-[80px]">
+                              <Link to='/history' state={{email:data.email}}>History</Link>
+                            </div>
+                            
                             <Settings toggle={toggle}></Settings>
                         </div> :
                         <div className="fixed top-[0px] left-[0px] w-[65px] cursor-pointer bg-gray-600 h-screen transition-[width] duration-700 z-10">
@@ -95,7 +101,11 @@ export default function Main() {
                                 <div className="mb-[3px] w-[25px] h-[5px] bg-yellow-400"></div>
                                 <div className=" w-[25px] h-[5px] bg-yellow-400"></div>
                             </div>
-                            <Addchat toggle={toggle}></Addchat>
+                            <div className="relative top-[115px] left-[10px] h-[80px]">
+                              <Link to='/history' state={{email:data.email}}>
+                              <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAAsTAAALEwEAmpwYAAAEWUlEQVR4nO1aSY8VVRT+EBDsGAYhTMJOEsCd/wAIY2ToRFcOiUCEMCxsaLrufQ+KFQtgywb1T0ggTURtcCGDGiKDrYASMAiBuAEiYz5ybp2qLniv3lDvvtfV0ZNUutL31jn3q3Pq3HO++4D/gtDgBA3OYqQLLShXQ3MDTKbFGlocoMFRGvxOi39o8ZgGj9y9wSAtjuictQzxRiGAcBvGsYQPaNBPi6fx/IYvg2c0+JoWH/MzvNZxIAwxniX00OCv1MIe0uA7Gux2b9tgnvPSpxjrLrkvY74bs9hFg29o8G/q+Vs02MkQXR0BQosVtLicWsA5GmyUhTatP8QEBviEFqdSXromIdo2IM4LBgdTAM4zwEoCo7zYKmERDU6nAH3pzTuJ0hDTaHEmCSGLXoYY48VI2l6IV2ixiQb3Em/3YlbriofefhxKV2nxjpdV17JrMM95PLL5J8uY25rCFzPML7R4M6+Opp8L8bpmNHn+BkuY06yOikU0kEa/9w1ERFKy25TjMMubopvYE07W05FrAXCemUSDC/rCPsdwSatARNz+Y3Ffda3CSAUiQovN6pU/Ggoxt+HtwAwUDcj7GC0FrILZXv/jsrhLgwfcidmtGvcJRIQGSxTITdmgkSW02KATf4An8QlEJNn9DT5EltDi27qThh/IetV5LDvNSe8gVx8mFhZIHyZqmfRU1lw5weA9NXrcl9F2ABFx7UKkt7JKpsFeDas9KD6Q3brW/dUGj6rR7sIDsehWvYerDf7mBsuYPwI8skA9Mlht8LYOTvdocHGqsFzsTW+IqarzTuVglAkohII3g1H/EgO54k3vNoyLm7zKwYiykW7wVS/GdmCGpvMYyHUfeusDkdJEBgNMgR8QvyqAJwKCAZa3qrex0IoItZY/9hdAyF+PBWgsLOPt7I89YgDFI6uRUyRRpJqgQS/EQa30a/BVtcED+hZ3oaCeiIUWoQLZV2uTOV5UT8RCi4HM6BFC2RViQmOGmIACeiJV3GYXjW7SEP2yruqEas9YbO0UiJd6pn5kiWPFo0WdypxU7TmDLZ0AIZIwnjUbq4jfvakTF6JgQotl+qL/rktA0KJPgZwVLhYFEQovHLe5JfQ08kCXUvsCZiMKIhz6Fq82zDjqEZoAuSeEcttX2chObvBAU+67zT0s5xPxOYjHHj5nur2oazmUR0GXI44jBQNtPeOrzbOd1DX8nJ/E7sUsdz6hXJePyrhJ8vpEQpNazGxNYRlzU2Au+G6FM1tZg0sJiABv+VEceSYOM2HFN7cjNVP4XclO8Yct4dSqJzLi9YvUmciPwsV60x9gKQ1+Suk/1O6z91Uas7HBM47GzJHZNCNtSB200u0TzabYvKJHYtuTcublHwxISyC5P8AU4QDcJfdRZ9etcwYSwiNm2EvoGY7sGNVmAT4SQjnXTziitqFfCsCaxwSdFA2TNdK1CQOoPYqctTxShuau/u+wmxNg9XButP8L2izPASJKgmhqY8T9AAAAAElFTkSuQmCC" className="h-[35px] w-[35px]"/>
+                              </Link>
+                            </div>
                             <Settings toggle={toggle}></Settings>
                         </div>
                 }
