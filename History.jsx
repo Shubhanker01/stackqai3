@@ -42,6 +42,7 @@ export default function History() {
                                 {
                                     history.map((chats) => (
                                         <li key={chats._id} className="relative mb-[25px]">
+                                            <h1 className="text-2xl">{chats.date}</h1>
                                             <UserChat chat={chats.question}></UserChat>
                                             <Chatbot loader={false} answer={chats.answer}></Chatbot>
                                         </li>
