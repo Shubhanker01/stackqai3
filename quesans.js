@@ -9,13 +9,16 @@ router.use(express.json())
 // save question answers
 router.post('/', async function (req, res) {
     try {
+        let date = new Date()
         const data = await user.findOne({ email: req.body.email }).exec()
         await quesans.create({
             "user_id": data._id,
             "question": req.body.question,
             "answer": req.body.answer,
-            "date":Date
+            "date":date
         }).then(() => {
+            quesans.markModified('date')
+            quesans.bulkSave()
             res.send("Saved successfully")
         }).catch((err) => {
             res.send(err)
@@ -32,10 +35,15 @@ router.post('/history', async function (req, res) {
         let data = await user.findOne({ email: req.body.email })
         let response = await quesans.find({ user_id: data._id })
         let results = response.map(function (result) {
+            let weekday = new Array("Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday")
+            let monthDay = new Array("January","Feburary","March","April","May","June","July","August","September","October","November","December")
+            let day = result.date.getDay()
+            let newDate = result.date.toLocaleDateString()
             let obj = {
                 "_id":result._id,
                 "question": result.question,
-                "answer": result.answer
+                "answer": result.answer,
+                "date":`${weekday[day]}, ${newDate}`
             }
             return obj
         })
