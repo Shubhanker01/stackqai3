@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { useLocation } from "react-router-dom"
 import UserChat from "./UserChat"
 import Chatbot from "./Chatbot"
+import Deletechat from "./Deletechat"
 
 export default function History() {
     const [history, showHistory] = useState([])
@@ -24,9 +25,11 @@ export default function History() {
         let data = await response.json()
         showHistory(data)
     }
+
     useEffect(() => {
         getHistory()
-    }, [])
+    }, [history])
+
     return (
         <>
             <div className="h-screen bg-gray-50">
@@ -41,10 +44,11 @@ export default function History() {
                             <ul className="absolute top-[100px] left-[300px] w-[850px] h-[70%] flex flex-col overflow-auto  scroll-auto" id="chatbox">
                                 {
                                     history.map((chats) => (
-                                        <li key={chats._id} className="relative mb-[25px]">
+                                        <li key={chats._id} className="relative mb-[25px] bg-gray-200 p-2 rounded-lg">
                                             <h1 className="text-2xl">{chats.date}</h1>
                                             <UserChat chat={chats.question}></UserChat>
                                             <Chatbot loader={false} answer={chats.answer}></Chatbot>
+                                            <Deletechat id={chats._id}/>
                                         </li>
                                     ))
                                 }
