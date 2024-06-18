@@ -3,9 +3,11 @@ import { useLocation } from "react-router-dom"
 import UserChat from "./UserChat"
 import Chatbot from "./Chatbot"
 import Deletechat from "./Deletechat"
+import DeleteAllChat from "./DeleteAllChat"
 
 export default function History() {
     const [history, showHistory] = useState([])
+    const [userId,getUserId] = useState("")
     const location = useLocation()
     const email = location.state.email
 
@@ -24,6 +26,12 @@ export default function History() {
         })
         let data = await response.json()
         showHistory(data)
+        if(data.length==0){
+            getUserId("")
+        }
+        else{
+            getUserId(data[0].user_id)
+        }
     }
 
     useEffect(() => {
@@ -34,6 +42,7 @@ export default function History() {
         <>
             <div className="h-screen bg-gray-50">
                 <h1 className="text-3xl pl-[15px] pt-[10px]">History</h1>
+                
                 {
                     history.length == 0 ?
                         <div className="m-auto mt-[10px]">
@@ -41,6 +50,7 @@ export default function History() {
                             <h1 className="text-2xl text-center">Nothing to show in your history</h1>
                         </div> :
                         <div className="">
+                            <DeleteAllChat userId={userId}/>
                             <ul className="absolute top-[100px] left-[300px] w-[850px] h-[70%] flex flex-col overflow-auto  scroll-auto" id="chatbox">
                                 {
                                     history.map((chats) => (
