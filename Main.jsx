@@ -124,7 +124,7 @@ export default function Main() {
                         </div>
                 }
 
-                <div className="grid grid-cols-2 fixed w-full top-[5px]">
+                <div className="grid grid-cols-2 fixed w-full top-[5px] z-20">
 
                     <div className="flex">
                         <h1 className="font-bold text-3xl text-[#222426] ml-[220px]  mt-[20px]">StackQ AI</h1>
