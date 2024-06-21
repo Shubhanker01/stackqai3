@@ -34,14 +34,17 @@ router.post('/history', async function (req, res) {
     try {
         let data = await user.findOne({ email: req.body.email })
         let response = await quesans.find({ user_id: data._id })
+        // sorting according to dates
+        response.sort(function (a, b) {
+            return b.date.getTime() - a.date.getTime()
+        })
         let results = response.map(function (result) {
             let weekday = new Array("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")
-            let monthDay = new Array("January", "Feburary", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")
             let day = result.date.getDay()
             let newDate = result.date.toLocaleDateString()
             let obj = {
                 "_id": result._id,
-                "user_id":result.user_id,
+                "user_id": result.user_id,
                 "question": result.question,
                 "answer": result.answer,
                 "date": `${weekday[day]}, ${newDate}`
