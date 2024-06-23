@@ -4,11 +4,12 @@ from transformers import AutoTokenizer
 import torch
 from transformers import AutoModelForQuestionAnswering
 
-context = "The gradual reduction in the amount of global direct irradiance at the Earth's surface is called Global Dimming. It is believed that it has been caused by the increase in particulates such as sulphate aerosols in the atmosphere due to human action"
+with open('testing.txt','r') as file:
+  context = file.read()
 
 # creating function to predict the answer
 def predict(question,context):
-  tokenizer = AutoTokenizer.from_pretrained("my-model1")
+  tokenizer = AutoTokenizer.from_pretrained("my-model")
   inputs = tokenizer(question, context, return_tensors="pt")
   model = AutoModelForQuestionAnswering.from_pretrained("my-model1")
   with torch.no_grad():
