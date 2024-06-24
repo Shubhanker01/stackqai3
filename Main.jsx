@@ -1,5 +1,4 @@
 import { useState } from "react"
-import Addchat from "./Addchat"
 import Settings from "./Settings"
 import UserChat from "./UserChat"
 import Intro from "./Intro"
@@ -17,9 +16,9 @@ export default function Main() {
     const [question, setQuestion] = useState("")
     const [arr, setArr] = useState([])
     const [state, setState] = useState(false)
-    const [ans, setAns] = useState("")
-    const [email, getEmail] = useState(data.email)
-    
+    // const [ans, setAns] = useState("")
+    const email = data.email
+
 
     const getAPI = async () => {
         let headersList = {
@@ -29,27 +28,27 @@ export default function Main() {
         let bodyContent = JSON.stringify({
             "ques": question
         });
-       
+
         let response = await fetch("http://127.0.0.1:5000/question", {
             method: "POST",
             body: bodyContent,
             headers: headersList
         });
         let data = await response.text();
-        let bodyContent1=JSON.stringify({
-            "email":email,
-            "question":question,
-            "answer":data,
-            "date":Date
+        let bodyContent1 = JSON.stringify({
+            "email": email,
+            "question": question,
+            "answer": data,
+            "date": Date
         })
-        let data2 = await fetch('http://localhost:9000/quesans',{
-            method:'POST',
-            body:bodyContent1,
-            headers:headersList
+        let data2 = await fetch('http://localhost:9000/quesans', {
+            method: 'POST',
+            body: bodyContent1,
+            headers: headersList
         })
         let res = await data2.text()
         console.log(res)
-        setAns(data)
+        setArr([...arr, { id: id++, ques: question, ans: data }])
     }
 
 
@@ -59,9 +58,9 @@ export default function Main() {
     }
 
     const handleClick = () => {
-        setArr([...arr, { id: id++, ques: question }])
-        setState(true)
+        setArr([...arr, { id: id++, ques: question, ans: "" }])
         getAPI()
+        setState(true)
         setQuestion("")
         // var ele = document.getElementById('chatbox')
         // ele.scrollTop = ele.scrollHeight
@@ -81,30 +80,34 @@ export default function Main() {
             <div className="w-full bg-gray-50 h-screen">
                 {
                     toggle == "on" ?
-                        <div className="fixed top-[0px] left-[0px] w-[200px] cursor-pointer bg-gray-600 h-screen transition-[width] duration-700 z-10">
-                            <div className="relative left-[10px] top-[10px]" onClick={() => changeToggle()}>
-                                <div className="mb-[3px] w-[25px] h-[5px] bg-yellow-400"></div>
-                                <div className="mb-[3px] w-[25px] h-[5px] bg-yellow-400"></div>
-                                <div className=" w-[25px] h-[5px] bg-yellow-400"></div>
+                        <div className="fixed top-[0px] left-[0px] w-[200px] bg-gray-800 h-screen transition-[width] duration-700 z-30">
+                            <div className="relative left-[15px] top-[15px] cursor-pointer" onClick={() => changeToggle()}>
+                                <div className="mb-[3px] w-[25px] h-[5px] bg-slate-100"></div>
+                                <div className="mb-[3px] w-[25px] h-[5px] bg-slate-100"></div>
+                                <div className=" w-[25px] h-[5px] bg-slate-100"></div>
 
                             </div>
-                            {/* <Addchat toggle={toggle} email={data.email}></Addchat> */}
                             <div className="relative top-[115px] left-[10px] h-[80px]">
-                              <Link to='/history' state={{email:data.email}}>History</Link>
+                                <Link to='/history' state={{ email: data.email }}>
+                                    <div className="flex">
+                                        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAAsTAAALEwEAmpwYAAAEz0lEQVR4nO1ayY4cRRBNMItB2Aaxn0A2PvED7KuxOGEQi4yAyxi42HDhYI4cDHwDi0AGBqTBY0CsHsC2ABmEudgy9pg5jDQHJDRNd2ZV5RLFIdDLzhoX9PSe3V0WPKk0rcmqyHodkZERL1uI/wKUdu8rQ/vF2Q6laQFXL/fW6/UNMrVbEuNeVCZ/U2n6Wpn8F6nplNR0Ep8b2s0pk7+Be2Rq72PmDZUgwswXKO0ekNq9lRiaL+7v9ZKaTkvt9ja0e2hxkdeOnchvzBeqjKakdj+UXupXpd17Uue78G1LyxvhJWY+D5f3mLWb/JjOd0qdv6O0O7HyvKEfE0vPLC0tXTQWIvXE3Kk0fVMi8GlqaDtetF/7fzBfkmj3sMxoX8lThxGiIyPivaDppdI3+HkjtXcx8zlR5jLmZpnRbGG/oenVaN5Z+ZaUulyZfLYIocTS08y8RkQGM58rDT0utTu24m3mq4Y2XHK3DyWp3cE0pRvFiCEtb4THw5yHG9ZeP5TBf2QYQ5+lKV89qI1+n2Pmi5HRgme+z7Ls2n5ttLxE9yv/IDYRACnZb8ohzAZO0b0SaWg3EiJArVZbLzV9Eey8LCaFYYkAfv/R7jjspPave8TZSgSQhp4Ii/9QTyGGDe/3JLlSVIzIzAyvQQHrQzmjHd0XV+aOKpMfz7LsGlEhIkBi8lu9VzJ3BBu0aAdp6DE/saEPRSTEJAIUu3+i3TbRDlK7d7veNGkihh4Na+XtTmkOvcOp5WVeV1Uiy8u8zpdJhubxzi03SGvv996w+V4REbGJAGgXvFdWq5KVcS80J3XPi4oTkTrf5b90k+9unbDZni7IzG6tPJHMbg3r5PXWCQ3N+UFrN1WeiLU3hNJornXQ0E/eXUlyRawJ/1TmloIIPseyK5kv83Yz93ProO+5aQGCQrQJtTtYKi6/jWWXvejRbPJWmZROBiLnx5gMZQ5Seam3/06Mg4hCaYK4Y740Bgml3YEw2TxI1I25Q4wjtBQEtQiLvUwCf2MWoAWUc5vbLnYogH7Q2nvFgECiKJogTBJFOOicfl9rGfRSpx/Md4qKeqKA1PlzoQre3ZblICXKuDxRQGk33TZ6ICg39Vt3AgqgqKAnSsVt+6IRKOSXRLtHRI9QGT01LhLlngnCuWgHqOLN2KN9og8oQ0+OgwRQKJ4deya0j2gjg1Z1k6gYEpPf3iRBR7oKEInOnw3t7n5osaIiYOjChcid0VTXB6CAQ9r3GpKh7aIiUGEton7rWXFE5xUeOgZBWUwYCju5yQuB7u6+Hsb5RHEOErOH7xe1Wm290vRlKD739G0AIQbhOKTW6ZGe8bXB4iKvha4cMuknA78DdmicTxRaV4zKuD9PuKDEu0MJ83DpHYcsBRmUIbFb4Q6t7FcFibox10Ux3PRMM8ygikNQHkVqnoG+i+wUFjbCaWhPrH7oQq+stK6GPoIWG8t+YvLbpKGPS63xnpGuS5xPwN1nCOWzkDEHyWy+AETtFMoOVZxT9ptih8omGe04U8786wcDaAmc24zkAA0AFz7jfxhrCmxuuhA8CoVdZTQ1iezoa7OGdg9CUB7kJxx4xv/8Q7ttHY8JxgkfJqndgq4NCqDvUTJ3FOqMV2i8uOEOYAz3oCma5Eb7P8SI8TdKD0IBNSfnegAAAABJRU5ErkJggg==" className="h-[35px] w-[35px]" />
+                                        <p className="text-slate-50 pl-[15px] pt-[5px]">History</p>
+                                    </div>
+                                </Link>
                             </div>
-                            
+
                             <Settings toggle={toggle}></Settings>
                         </div> :
-                        <div className="fixed top-[0px] left-[0px] w-[65px] cursor-pointer bg-gray-600 h-screen transition-[width] duration-700 z-10">
-                            <div className="relative left-[10px] top-[10px]" onClick={() => changeToggle()}>
-                                <div className="mb-[3px] w-[25px] h-[5px] bg-yellow-400"></div>
-                                <div className="mb-[3px] w-[25px] h-[5px] bg-yellow-400"></div>
-                                <div className=" w-[25px] h-[5px] bg-yellow-400"></div>
+                        <div className="fixed top-[0px] left-[0px] w-[65px]  bg-gray-800 h-screen transition-[width] duration-700 z-30">
+                            <div className="relative left-[15px] top-[15px] cursor-pointer" onClick={() => changeToggle()}>
+                                <div className="mb-[3px] w-[25px] h-[5px] bg-slate-100"></div>
+                                <div className="mb-[3px] w-[25px] h-[5px] bg-slate-100"></div>
+                                <div className=" w-[25px] h-[5px] bg-slate-100"></div>
                             </div>
                             <div className="relative top-[115px] left-[10px] h-[80px]">
-                              <Link to='/history' state={{email:data.email}}>
-                              <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAAsTAAALEwEAmpwYAAAEWUlEQVR4nO1aSY8VVRT+EBDsGAYhTMJOEsCd/wAIY2ToRFcOiUCEMCxsaLrufQ+KFQtgywb1T0ggTURtcCGDGiKDrYASMAiBuAEiYz5ybp2qLniv3lDvvtfV0ZNUutL31jn3q3Pq3HO++4D/gtDgBA3OYqQLLShXQ3MDTKbFGlocoMFRGvxOi39o8ZgGj9y9wSAtjuictQzxRiGAcBvGsYQPaNBPi6fx/IYvg2c0+JoWH/MzvNZxIAwxniX00OCv1MIe0uA7Gux2b9tgnvPSpxjrLrkvY74bs9hFg29o8G/q+Vs02MkQXR0BQosVtLicWsA5GmyUhTatP8QEBviEFqdSXromIdo2IM4LBgdTAM4zwEoCo7zYKmERDU6nAH3pzTuJ0hDTaHEmCSGLXoYY48VI2l6IV2ixiQb3Em/3YlbriofefhxKV2nxjpdV17JrMM95PLL5J8uY25rCFzPML7R4M6+Opp8L8bpmNHn+BkuY06yOikU0kEa/9w1ERFKy25TjMMubopvYE07W05FrAXCemUSDC/rCPsdwSatARNz+Y3Ffda3CSAUiQovN6pU/Ggoxt+HtwAwUDcj7GC0FrILZXv/jsrhLgwfcidmtGvcJRIQGSxTITdmgkSW02KATf4An8QlEJNn9DT5EltDi27qThh/IetV5LDvNSe8gVx8mFhZIHyZqmfRU1lw5weA9NXrcl9F2ABFx7UKkt7JKpsFeDas9KD6Q3brW/dUGj6rR7sIDsehWvYerDf7mBsuYPwI8skA9Mlht8LYOTvdocHGqsFzsTW+IqarzTuVglAkohII3g1H/EgO54k3vNoyLm7zKwYiykW7wVS/GdmCGpvMYyHUfeusDkdJEBgNMgR8QvyqAJwKCAZa3qrex0IoItZY/9hdAyF+PBWgsLOPt7I89YgDFI6uRUyRRpJqgQS/EQa30a/BVtcED+hZ3oaCeiIUWoQLZV2uTOV5UT8RCi4HM6BFC2RViQmOGmIACeiJV3GYXjW7SEP2yruqEas9YbO0UiJd6pn5kiWPFo0WdypxU7TmDLZ0AIZIwnjUbq4jfvakTF6JgQotl+qL/rktA0KJPgZwVLhYFEQovHLe5JfQ08kCXUvsCZiMKIhz6Fq82zDjqEZoAuSeEcttX2chObvBAU+67zT0s5xPxOYjHHj5nur2oazmUR0GXI44jBQNtPeOrzbOd1DX8nJ/E7sUsdz6hXJePyrhJ8vpEQpNazGxNYRlzU2Au+G6FM1tZg0sJiABv+VEceSYOM2HFN7cjNVP4XclO8Yct4dSqJzLi9YvUmciPwsV60x9gKQ1+Suk/1O6z91Uas7HBM47GzJHZNCNtSB200u0TzabYvKJHYtuTcublHwxISyC5P8AU4QDcJfdRZ9etcwYSwiNm2EvoGY7sGNVmAT4SQjnXTziitqFfCsCaxwSdFA2TNdK1CQOoPYqctTxShuau/u+wmxNg9XButP8L2izPASJKgmhqY8T9AAAAAElFTkSuQmCC" className="h-[35px] w-[35px]"/>
-                              </Link>
+                                <Link to='/history' state={{ email: data.email }}>
+                                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAAsTAAALEwEAmpwYAAAEz0lEQVR4nO1ayY4cRRBNMItB2Aaxn0A2PvED7KuxOGEQi4yAyxi42HDhYI4cDHwDi0AGBqTBY0CsHsC2ABmEudgy9pg5jDQHJDRNd2ZV5RLFIdDLzhoX9PSe3V0WPKk0rcmqyHodkZERL1uI/wKUdu8rQ/vF2Q6laQFXL/fW6/UNMrVbEuNeVCZ/U2n6Wpn8F6nplNR0Ep8b2s0pk7+Be2Rq72PmDZUgwswXKO0ekNq9lRiaL+7v9ZKaTkvt9ja0e2hxkdeOnchvzBeqjKakdj+UXupXpd17Uue78G1LyxvhJWY+D5f3mLWb/JjOd0qdv6O0O7HyvKEfE0vPLC0tXTQWIvXE3Kk0fVMi8GlqaDtetF/7fzBfkmj3sMxoX8lThxGiIyPivaDppdI3+HkjtXcx8zlR5jLmZpnRbGG/oenVaN5Z+ZaUulyZfLYIocTS08y8RkQGM58rDT0utTu24m3mq4Y2XHK3DyWp3cE0pRvFiCEtb4THw5yHG9ZeP5TBf2QYQ5+lKV89qI1+n2Pmi5HRgme+z7Ls2n5ttLxE9yv/IDYRACnZb8ohzAZO0b0SaWg3EiJArVZbLzV9Eey8LCaFYYkAfv/R7jjspPave8TZSgSQhp4Ii/9QTyGGDe/3JLlSVIzIzAyvQQHrQzmjHd0XV+aOKpMfz7LsGlEhIkBi8lu9VzJ3BBu0aAdp6DE/saEPRSTEJAIUu3+i3TbRDlK7d7veNGkihh4Na+XtTmkOvcOp5WVeV1Uiy8u8zpdJhubxzi03SGvv996w+V4REbGJAGgXvFdWq5KVcS80J3XPi4oTkTrf5b90k+9unbDZni7IzG6tPJHMbg3r5PXWCQ3N+UFrN1WeiLU3hNJornXQ0E/eXUlyRawJ/1TmloIIPseyK5kv83Yz93ProO+5aQGCQrQJtTtYKi6/jWWXvejRbPJWmZROBiLnx5gMZQ5Seam3/06Mg4hCaYK4Y740Bgml3YEw2TxI1I25Q4wjtBQEtQiLvUwCf2MWoAWUc5vbLnYogH7Q2nvFgECiKJogTBJFOOicfl9rGfRSpx/Md4qKeqKA1PlzoQre3ZblICXKuDxRQGk33TZ6ICg39Vt3AgqgqKAnSsVt+6IRKOSXRLtHRI9QGT01LhLlngnCuWgHqOLN2KN9og8oQ0+OgwRQKJ4deya0j2gjg1Z1k6gYEpPf3iRBR7oKEInOnw3t7n5osaIiYOjChcid0VTXB6CAQ9r3GpKh7aIiUGEton7rWXFE5xUeOgZBWUwYCju5yQuB7u6+Hsb5RHEOErOH7xe1Wm290vRlKD739G0AIQbhOKTW6ZGe8bXB4iKvha4cMuknA78DdmicTxRaV4zKuD9PuKDEu0MJ83DpHYcsBRmUIbFb4Q6t7FcFibox10Ux3PRMM8ygikNQHkVqnoG+i+wUFjbCaWhPrH7oQq+stK6GPoIWG8t+YvLbpKGPS63xnpGuS5xPwN1nCOWzkDEHyWy+AETtFMoOVZxT9ptih8omGe04U8786wcDaAmc24zkAA0AFz7jfxhrCmxuuhA8CoVdZTQ1iezoa7OGdg9CUB7kJxx4xv/8Q7ttHY8JxgkfJqndgq4NCqDvUTJ3FOqMV2i8uOEOYAz3oCma5Eb7P8SI8TdKD0IBNSfnegAAAABJRU5ErkJggg==" className="h-[35px] w-[35px]" />
+                                </Link>
                             </div>
                             <Settings toggle={toggle}></Settings>
                         </div>
@@ -128,7 +131,7 @@ export default function Main() {
 
                     <div className="flex">
                         <h1 className="font-bold text-3xl text-[#222426] ml-[220px]  mt-[20px]">StackQ AI</h1>
-                        <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="35" height="35" viewBox="0 0 48 48" className="mt-[25px] ml-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="35" height="35" viewBox="0 0 48 48" className="mt-[20px] ml-2">
                             <polygon fill="#3dd9eb" points="41,43 7,43 7,28 11,28 11,39 37,39 37,28 41,28"></polygon><rect width="20" height="4" x="14" y="32" fill="#f5bc00"></rect><rect width="3.999" height="18.973" x="22.743" y="17.19" fill="#f5bc00" transform="rotate(-77.379 24.743 26.678)"></rect><rect width="4" height="19.022" x="24.812" y="10.629" fill="#f5bc00" transform="rotate(-64.196 26.812 20.14)"></rect><rect width="4" height="19.015" x="28.478" y="4.617" fill="#f5bc00" transform="rotate(-49.892 30.48 14.126)"></rect><rect width="4" height="19.1" x="33.75" y="-.425" fill="#f5bc00" transform="rotate(-37.022 35.749 9.126)"></rect><rect width="4" height="4" x="7" y="39" fill="#00b3d7"></rect><rect width="4" height="4" x="37" y="39" fill="#00b3d7"></rect>
                         </svg>
                     </div>
@@ -150,7 +153,7 @@ export default function Main() {
                                         arr.map((ques) => (
                                             <li key={ques.id} className="relative mb-[25px]">
                                                 <UserChat chat={ques.ques}></UserChat>
-                                                <Chatbot loader={true} answer={ans}></Chatbot>
+                                                <Chatbot loader={true} answer={ques.ans}></Chatbot>
                                             </li>
                                         ))
                                     }
